@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkSmart — جامعة الإمام</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #161d2e;
+    --border: #1e2d45;
+    --accent: #00d4aa;
+    --accent2: #0ea5e9;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #22c55e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,14,26,0.8);
+    backdrop-filter: blur(20px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -1px;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+  }
+
+  .hstat {
+    text-align: center;
+  }
+
+  .hstat-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hstat-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse-green 1.5s infinite;
+  }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 5;
+    padding: 40px;
+  }
+
+  /* SECTION TITLE */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .update-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .sum-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .sum-card:hover { transform: translateY(-2px); }
+
+  .sum-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .sum-card.green::before { background: var(--green); }
+  .sum-card.blue::before { background: var(--accent2); }
+  .sum-card.yellow::before { background: var(--warn); }
+  .sum-card.red::before { background: var(--danger); }
+
+  .sum-icon { font-size: 28px; margin-bottom: 12px; }
+  .sum-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .sum-card.green .sum-val { color: var(--green); }
+  .sum-card.blue .sum-val { color: var(--accent2); }
+  .sum-card.yellow .sum-val { color: var(--warn); }
+  .sum-card.red .sum-val { color: var(--danger); }
+
+  .sum-lbl { font-size: 13px; color: var(--muted); }
+
+  /* PARKING GRID */
+  .parking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .park-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .park-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,212,170,0.1);
+  }
+
+  .park-card.full {
+    border-color: rgba(239,68,68,0.4);
+    animation: danger-pulse 2s infinite;
+  }
+
+  .park-card.full:hover {
+    border-color: var(--danger);
+    box-shadow: 0 12px 40px rgba(239,68,68,0.15);
+  }
+
+  .park-card.almost {
+    border-color: rgba(245,158,11,0.3);
+  }
+
+  @keyframes danger-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    50% { box-shadow: 0 0 0 8px rgba(239,68,68,0.08); }
+  }
+
+  .park-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .park-id {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .park-location {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .badge-open {
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .badge-almost {
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: var(--warn);
+  }
+
+  .badge-full {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--danger);
+    animation: badge-blink 1s infinite;
+  }
+
+  @keyframes badge-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* PROGRESS BAR */
+  .progress-section { margin-bottom: 18px; }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label { font-size: 12px; color: var(--muted); }
+
+  .progress-numbers {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 30px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .fill-green { background: linear-gradient(90deg, #16a34a, #22c55e); }
+  .fill-yellow { background: linear-gradient(90deg, #d97706, #f59e0b); }
+  .fill-red { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+
+  /* SLOTS VISUAL */
+  .slots-visual {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .slot {
+    width: 20px; height: 28px;
+    border-radius: 4px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .slot.empty {
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(34,197,94,0.3);
+  }
+
+  .slot.taken {
+    background: rgba(100,116,139,0.2);
+    border-color: rgba(100,116,139,0.3);
+  }
+
+  .slot.taken::after {
+    content: '🚗';
+    font-size: 10px;
+  }
+
+  /* PARK FOOTER */
+  .park-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .sensor-info {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sensor-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse-green 2s infinite;
+  }
+
+  .available-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .available-count.green { color: var(--green); }
+  .available-count.yellow { color: var(--warn); }
+  .available-count.red { color: var(--danger); }
+
+  .available-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  /* FULL OVERLAY */
+  .full-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(239,68,68,0.06);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
+  .park-card.full .full-overlay { display: block; }
+
+  /* ADMIN PANEL */
+  .admin-section {
+    margin-top: 48px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .admin-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .admin-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .admin-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .form-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .form-input, .form-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+  }
+
+  .btn-add {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    color: #0a0e1a;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,212,170,0.3);
+  }
+
+  /* SIMULATE SECTION */
+  .simulate-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .sim-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .sim-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-sim {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-sim:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toast-in 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    backdrop-filter: blur(20px);
+  }
+
+  .toast.danger { border-color: rgba(239,68,68,0.4); }
+  .toast.success { border-color: rgba(34,197,94,0.4); }
+
+  @keyframes toast-in {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* MAP HINT */
+  .map-section {
+    margin-top: 24px;
+    background: rgba(0,212,170,0.03);
+    border: 1px dashed rgba(0,212,170,0.2);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .map-icon { font-size: 32px; }
+
+  .map-text-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .map-text-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  footer span { color: var(--accent); }
+
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; flex-wrap: wrap; gap: 16px; }
+    main { padding: 20px; }
+    .summary-bar { grid-template-columns: repeat(2,1fr); }
+    .admin-form { grid-template-columns: 1fr; }
+    .header-stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🅿️</div>
+    <div>
+      <div class="logo-text">ParkSmart</div>
+      <div class="logo-sub">جامعة الإمام محمد بن سعود</div>
+    </div>
+  </div>
+
+  <div class="header-stats">
+    <div class="hstat">
+      <div class="hstat-val" id="totalSlots">0</div>
+      <div class="hstat-lbl">إجمالي المواقف</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="totalFree">0</div>
+      <div class="hstat-lbl">مواقف شاغرة</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="totalOcc">0</div>
+      <div class="hstat-lbl">مواقف مشغولة</div>
+    </div>
+  </div>
+
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    مباشر الآن
+  </div>
+</header>
+
+<main>
+  <!-- SUMMARY -->
+  <div class="section-header">
+    <div class="section-title">ملخص المواقف</div>
+    <div class="update-time" id="updateTime">آخر تحديث: --:--:--</div>
+  </div>
+
+  <div class="summary-bar">
+    <div class="sum-card green">
+      <div class="sum-icon">✅</div>
+      <div class="sum-val" id="sumFree">0</div>
+      <div class="sum-lbl">مواقف شاغرة</div>
+    </div>
+    <div class="sum-card blue">
+      <div class="sum-icon">🏢</div>
+      <div class="sum-val" id="sumTotal">0</div>
+      <div class="sum-lbl">إجمالي المواقف</div>
+    </div>
+    <div class="sum-card yellow">
+      <div class="sum-icon">⚠️</div>
+      <div class="sum-val" id="sumAlmost">0</div>
+      <div class="sum-lbl">تقارب الامتلاء</div>
+    </div>
+    <div class="sum-card red">
+      <div class="sum-icon">🚫</div>
+      <div class="sum-val" id="sumFull">0</div>
+      <div class="sum-lbl">ممتلئة تماماً</div>
+    </div>
+  </div>
+
+  <!-- PARKING LOTS -->
+  <div class="section-header">
+    <div class="section-title">حالة المواقف</div>
+  </div>
+
+  <div class="parking-grid" id="parkingGrid">
+    <!-- Generated by JS -->
+  </div>
+
+  <!-- MAP HINT -->
+  <div class="map-section">
+    <div class="map-icon">🗺️</div>
+    <div>
+      <div class="map-text-title">خريطة الموقع التفاعلية</div>
+      <div class="map-text-sub">في النسخة النهائية: خريطة تفاعلية للحرم الجامعي تعرض كل موقف بلونه الحالي لمساعدة الطالب على التوجه مباشرة</div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-section">
+    <div class="admin-title">⚙️ لوحة إدارة المواقف</div>
+    <div class="admin-sub">تُستخدم من قِبل الجامعة لإضافة وإدارة مواقف السيارات وعدد المساحات في كل موقف</div>
+
+    <div class="admin-form">
+      <div class="form-group">
+        <label class="form-label">رمز الموقف</label>
+        <input class="form-input" id="inputId" placeholder="مثال: P18" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">الموقع</label>
+        <input class="form-input" id="inputLoc" placeholder="مثال: البوابة الشمالية" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">الطاقة الاستيعابية</label>
+        <input class="form-input" id="inputCap" type="number" placeholder="مثال: 50" min="1" />
+      </div>
+      <button class="btn-add" onclick="addParking()">+ إضافة موقف</button>
+    </div>
+
+    <div class="simulate-section">
+      <div class="sim-title">محاكاة الحساسات — اختبار النظام</div>
+      <div class="sim-buttons">
+        <button class="btn-sim" onclick="simulateRandom()">🎲 محاكاة عشوائية لجميع المواقف</button>
+        <button class="btn-sim" onclick="simulatePeak()">🔴 محاكاة ساعة الذروة</button>
+        <button class="btn-sim" onclick="simulateMorning()">🌅 محاكاة الصباح الباكر</button>
+        <button class="btn-sim" onclick="resetAll()">↺ إعادة تعيين الكل</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  نظام <span>ParkSmart</span> — مشروع هاكاثون جامعة الإمام محمد بن سعود الإسلامية
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ===================== DATA =====================
+const parkingData = [
+  { id: 'P17', location: 'البوابة الرئيسية', capacity: 40, occupied: 38 },
+  { id: 'P15', location: 'كلية الهندسة', capacity: 60, occupied: 22 },
+  { id: 'P12', location: 'كلية الحاسب والمعلومات', capacity: 30, occupied: 34 },
+  { id: 'P08', location: 'كلية الاقتصاد', capacity: 50, occupied: 15 },
+  { id: 'P22', location: 'البوابة الجنوبية', capacity: 35, occupied: 27 },
+  { id: 'P05', location: 'الملاعب الرياضية', capacity: 80, occupied: 12 },
+];
+
+// ===================== STATUS LOGIC =====================
+function getStatus(cap, occ) {
+  const pct = occ / cap;
+  if (occ >= cap) return 'full';
+  if (pct >= 0.8) return 'almost';
+  return 'open';
+}
+
+function getStatusLabel(status) {
+  if (status === 'full') return '<span class="badge-dot"></span> ممتلئ تماماً';
+  if (status === 'almost') return '<span class="badge-dot"></span> يقارب الامتلاء';
+  return '<span class="badge-dot"></span> متاح';
+}
+
+function getStatusClass(status) {
+  if (status === 'full') return 'badge-full';
+  if (status === 'almost') return 'badge-almost';
+  return 'badge-open';
+}
+
+function getBarClass(status) {
+  if (status === 'full') return 'fill-red';
+  if (status === 'almost') return 'fill-yellow';
+  return 'fill-green';
+}
+
+function getCountClass(status) {
+  if (status === 'full') return 'red';
+  if (status === 'almost') return 'yellow';
+  return 'green';
+}
+
+// ===================== RENDER =====================
+function renderSlots(capacity, occupied) {
+  const max = Math.min(capacity, 20);
+  const takenRatio = occupied / capacity;
+  const takenCount = Math.round(takenRatio * max);
+  let html = '';
+  for (let i = 0; i < max; i++) {
+    html += `<div class="slot ${i < takenCount ? 'taken' : 'empty'}"></div>`;
+  }
+  if (capacity > 20) {
+    html += `<div style="font-size:11px;color:var(--muted);align-self:center;padding:0 4px">+${capacity - 20}</div>`;
+  }
+  return html;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('parkingGrid');
+  grid.innerHTML = '';
+
+  let totalFree = 0, totalCap = 0, almostCount = 0, fullCount = 0;
+
+  parkingData.forEach((p, i) => {
+    const occupied = Math.min(p.occupied, p.capacity);
+    const free = p.capacity - occupied;
+    const status = getStatus(p.capacity, occupied);
+    const pct = Math.round((occupied / p.capacity) * 100);
+
+    totalFree += free;
+    totalCap += p.capacity;
+    if (status === 'almost') almostCount++;
+    if (status === 'full') fullCount++;
+
+    const card = document.createElement('div');
+    card.className = `park-card ${status}`;
+    card.style.animationDelay = `${i * 0.1}s`;
+    card.innerHTML = `
+      <div class="full-overlay"></div>
+      <div class="park-top">
+        <div>
+          <div class="park-id">${p.id}</div>
+          <div class="park-location">📍 ${p.location}</div>
+        </div>
+        <div class="status-badge ${getStatusClass(status)}">${getStatusLabel(status)}</div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-info">
+          <span class="progress-label">نسبة الإشغال</span>
+          <span class="progress-numbers" style="color:${status==='full'?'var(--danger)':status==='almost'?'var(--warn)':'var(--green)'}">
+            ${occupied} / ${p.capacity}
+          </span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill ${getBarClass(status)}" style="width:${pct}%"></div>
+        </div>
+      </div>
+
+      <div class="slots-visual">${renderSlots(p.capacity, occupied)}</div>
+
+      <div class="park-footer">
+        <div class="sensor-info">
+          <div class="sensor-dot"></div>
+          حساس نشط — تحديث كل 5 ثوانٍ
+        </div>
+        <div style="text-align:left">
+          <div class="available-count ${getCountClass(status)}">${free}</div>
+          <div class="available-lbl">موقف شاغر</div>
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+
+    if (status === 'full') {
+      // show toast once
+    }
+  });
+
+  // Update summaries
+  document.getElementById('sumFree').textContent = totalFree;
+  document.getElementById('sumTotal').textContent = totalCap;
+  document.getElementById('sumAlmost').textContent = almostCount;
+  document.getElementById('sumFull').textContent = fullCount;
+  document.getElementById('totalSlots').textContent = totalCap;
+  document.getElementById('totalFree').textContent = totalFree;
+  document.getElementById('totalOcc').textContent = totalCap - totalFree;
+
+  const now = new Date();
+  document.getElementById('updateTime').textContent =
+    'آخر تحديث: ' + now.toLocaleTimeString('ar-SA');
+}
+
+// ===================== ADMIN ACTIONS =====================
+function addParking() {
+  const id = document.getElementById('inputId').value.trim().toUpperCase();
+  const loc = document.getElementById('inputLoc').value.trim();
+  const cap = parseInt(document.getElementById('inputCap').value);
+
+  if (!id || !loc || !cap || cap < 1) {
+    showToast('⚠️ يرجى تعبئة جميع الحقول بشكل صحيح', 'danger'); return;
+  }
+  if (parkingData.find(p => p.id === id)) {
+    showToast('⚠️ رمز الموقف موجود مسبقاً', 'danger'); return;
+  }
+
+  parkingData.push({ id, location: loc, capacity: cap, occupied: 0 });
+  document.getElementById('inputId').value = '';
+  document.getElementById('inputLoc').value = '';
+  document.getElementById('inputCap').value = '';
+  renderGrid();
+  showToast(`✅ تم إضافة موقف ${id} بنجاح`, 'success');
+}
+
+// ===================== SIMULATION =====================
+function simulateRandom() {
+  parkingData.forEach(p => {
+    p.occupied = Math.floor(Math.random() * (p.capacity + 3));
+  });
+  renderGrid();
+  checkFullParking();
+  showToast('🎲 تم محاكاة بيانات عشوائية', 'success');
+}
+
+function simulatePeak() {
+  parkingData.forEach(p => {
+    p.occupied = Math.floor(p.capacity * (0.85 + Math.random() * 0.25));
+  });
+  renderGrid();
+  checkFullParking();
+  showToast('🔴 تم محاكاة ساعة الذروة', 'danger');
+}
+
+function simulateMorning() {
+  parkingData.forEach(p => {
+    p.occupied = Math.floor(p.capacity * (0.05 + Math.random() * 0.2));
+  });
+  renderGrid();
+  showToast('🌅 تم محاكاة الصباح الباكر — معظم المواقف شاغرة', 'success');
+}
+
+function resetAll() {
+  parkingData.forEach(p => { p.occupied = 0; });
+  renderGrid();
+  showToast('↺ تم إعادة تعيين جميع المواقف', 'success');
+}
+
+function checkFullParking() {
+  const fullLots = parkingData.filter(p => p.occupied >= p.capacity);
+  if (fullLots.length > 0) {
+    const names = fullLots.map(p => p.id).join(', ');
+    setTimeout(() => showToast(`🚫 المواقف ${names} ممتلئة تماماً — توجّه لمواقف أخرى`, 'danger'), 300);
+  }
+}
+
+// ===================== TOAST =====================
+function showToast(msg, type = 'success') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+// ===================== LIVE SIM (auto sensor) =====================
+function liveUpdate() {
+  parkingData.forEach(p => {
+    const delta = Math.floor(Math.random() * 3) - 1; // -1, 0, or +1
+    p.occupied = Math.max(0, Math.min(p.capacity + 2, p.occupied + delta));
+  });
+  renderGrid();
+}
+
+// ===================== INIT =====================
+renderGrid();
+setInterval(liveUpdate, 5000); // every 5 seconds simulate sensor data
+</script>
+</body>
+</html>
